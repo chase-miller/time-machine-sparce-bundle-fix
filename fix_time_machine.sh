@@ -1,5 +1,8 @@
 #!/bin/sh
 
+# Disclaimer: While this works and is functional, I'm pretty terrible at shell scripting as I come from a Java/C# background. 
+# Feel free to make any recommendations for this to be more consistent and shell-scripty-like.
+
 # This is a modified version of http://pastebin.com/iw5nYFb0 - credit goes to anon.
 # Based off a guide written by Garth Gillespie at http://www.garth.org/archives/2011,08,27,169,fix-time-machine-sparsebundle-nas-based-backup-errors.html
 
