@@ -12,19 +12,21 @@ usage ()
 # a function to extract the dev disk from the hdiutil output
 extract_dev_disk ()
 {
-	# split the output by whitespace
-	DISKS_ARRAY=(${DISKS_STRING//" "/ })
+	HDIUTIL_OUTPUT="$1"
+	
+	# split the hdiutil output by spaces (" ") into an array.
+	DISKS_ARRAY=(${HDIUTIL_OUTPUT//" "/ })
 	for ((i = 0 ; i < ${#DISKS_ARRAY[@]}; i++));
 	do
+		# The dev disk we're looking for should have an Apple_HFS label
 	    if [ ${DISKS_ARRAY[$i]} = "Apple_HFS" ]
 			then
-				# the correct path should be just before the Apple_HFS element in the array
-				Previous_Index=$(($i-1))
-				INTERNAL_HFS_DISK=${DISKS_ARRAY[$Previous_Index]}
+				# The actual dev disk string should be just before the Apple_HFS element in the array
+				DEV_DISK=${DISKS_ARRAY[$(($i-1))]}
 		fi
 	done
 
-	echo "$INTERNAL_HFS_DISK"
+	echo "$DEV_DISK"
 }
 
 [ -e "$1" ] || usage
@@ -33,30 +35,41 @@ BUNDLE=$1
 
 set -e
 
+echo "\n"
 date
 echo 'chflags...'
-#chflags -R nouchg "$BUNDLE/"
+chflags -R nouchg "$BUNDLE/"
 
+echo "\n"
 date
 echo 'hdutil...'
 DISKS_STRING=`hdiutil attach -nomount -noverify -noautofsck "$BUNDLE/"`
-echo $DISKS_STRING
+echo hdiutil output is $DISKS_STRING
+
+echo "\n"
+date
 HFS_DISK=$(extract_dev_disk "$DISKS_STRING")
 echo "identified HFS(X) volume as $HFS_DISK"
 
+echo "\n"
 date
 echo 'fsck...'
-#fsck_hfs -drfy $HFS_DISK
+fsck_hfs -drfy $HFS_DISK
 # this was to wait for the log to finish before we ran fsck explicitly, as above
 # grep -q 'was repaired successfully|could not be repaired' <(tail -f -n 0 /var/log/fsck_hfs.log)
 
+echo "\n"
+date
 echo 'hdiutil detach...'
 hdiutil detach $HFS_DISK
 
 # make a backup of the original plist
+echo "\n"
+date
 echo 'backing up original plist...'
 cp "$BUNDLE/com.apple.TimeMachine.MachineID.plist" "$BUNDLE/com.apple.TimeMachine.MachineID.plist.bak"
 
+echo "\n"
 date
 echo 'fixing plist...'
 cat "$BUNDLE/com.apple.TimeMachine.MachineID.plist" |
@@ -69,6 +82,7 @@ cat "$BUNDLE/com.apple.TimeMachine.MachineID.plist" |
 cp /tmp/fixed-plist.plist "$BUNDLE/com.apple.TimeMachine.MachineID.plist"
 rm /tmp/fixed-plist.plist
 
+echo "\n"
 date
 echo 'done!'
 echo 'eject the disk from your desktop if necessary, then rerun Time Machine'
