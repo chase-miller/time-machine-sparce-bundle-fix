@@ -1,7 +1,7 @@
 #!/bin/sh
 
-# modified version of http://pastebin.com/iw5nYFb0
-# http://www.garth.org/archives/2011,08,27,169,fix-time-machine-sparsebundle-nas-based-backup-errors.html
+# This is a modified version of http://pastebin.com/iw5nYFb0 - credit goes to anon.
+# Based off a guide written by Garth Gillespie at http://www.garth.org/archives/2011,08,27,169,fix-time-machine-sparsebundle-nas-based-backup-errors.html
 
 usage ()
 {
