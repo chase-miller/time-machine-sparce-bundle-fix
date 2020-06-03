@@ -76,9 +76,9 @@ echo "\n"
 date
 echo 'fixing plist...'
 # change VerificationState to zero
-plutil -replace VerificationState -integer 0 com.apple.TimeMachine.MachineID.plist
+plutil -replace VerificationState -integer 0 "$BUNDLE/com.apple.TimeMachine.MachineID.plist"
 # remove RecoveryBackupDeclinedDate and write to a temp file
-plutil -remove RecoveryBackupDeclinedDate com.apple.TimeMachine.MachineID.plist
+plutil -remove RecoveryBackupDeclinedDate "$BUNDLE/com.apple.TimeMachine.MachineID.plist"
 
 echo "\n"
 date
