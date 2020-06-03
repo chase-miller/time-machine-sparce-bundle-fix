@@ -75,15 +75,10 @@ cp "$BUNDLE/com.apple.TimeMachine.MachineID.plist" "$BUNDLE/com.apple.TimeMachin
 echo "\n"
 date
 echo 'fixing plist...'
-cat "$BUNDLE/com.apple.TimeMachine.MachineID.plist" |
-  # change VerificationState to zero
-  awk 'BEGIN { RS = "" } { gsub(/VerificationState<\/key>[ \t\n]*<integer>2/, "VerificationState</key>\n\t<integer>0"); print }' |
-  # remove RecoveryBackupDeclinedDate and write to a temp file
-  awk 'BEGIN { RS = "" } { gsub(/[ \t\n]*<key>RecoveryBackupDeclinedDate<\/key>[ \t\n]*<date>[^<]+<\/date>/, ""); print }' > /tmp/fixed-plist.plist
-
-# replace the original (don't use mv; it throws weird errors when moving across this disks)
-cp /tmp/fixed-plist.plist "$BUNDLE/com.apple.TimeMachine.MachineID.plist"
-rm /tmp/fixed-plist.plist
+# change VerificationState to zero
+plutil -replace VerificationState -integer 0 com.apple.TimeMachine.MachineID.plist
+# remove RecoveryBackupDeclinedDate and write to a temp file
+plutil -remove RecoveryBackupDeclinedDate com.apple.TimeMachine.MachineID.plist
 
 echo "\n"
 date
